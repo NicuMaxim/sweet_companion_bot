@@ -1,0 +1,78 @@
+ 
+регать бота через father bot
+
+Use this token to access the HTTP API:
+1811197227:AAHqi2RhocL33aHrA7GISeH3F2zdA84vlFQ
+
+@sweet_companion_bot
+
+
+
+
+
+--------------------------------------
+
+качать ngrok - для белого IP
+
+установил.
+ngrok http 5000
+https://15c284d4b80c.ngrok.io
+
+
+Сетить белый IP на бота:
+https://api.telegram.org/bot1811197227:AAHqi2RhocL33aHrA7GISeH3F2zdA84vlFQ/setWebhook?url=https://15c284d4b80c.ngrok.io
+
+Смотреть статус бота:
+https://api.telegram.org/bot1811197227:AAHqi2RhocL33aHrA7GISeH3F2zdA84vlFQ/getWebhookInfo
+
+
+
+-----------------------------
+
+(?разобраться с grandle) - пока сижу на maven
+
+
+
+--------------------------------
+
+heroku - сервак. обойти бесплатный план через пингование по расписанию - скорее всего работает только с grandle
+
+
+
+-------------ПЛАН
+
+
+сделать универсальный бот. прописать сервисы и хэндлеры для:
+
+показать кнопки  - done
+хэндлить кнопки  - done
+ 
+показать меню - done 
+хэндлить меню - done
+
+ReplyMessageService - универсальный (+ message properties)  - done
+
+отправка картинок
+
+?подписка
+
+
+---TODO
+
+рефакторить код так, чтобы всё было логично и удобно
+лишнюю логику - выносить в соответствующие методы
+текст сообщений выносить в messages.properties
+
+подумать какую-то тестовую логику для демонстрации 
+
+
+
+
+
+
+
+
+
+
+
+
