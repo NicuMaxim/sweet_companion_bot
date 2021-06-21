@@ -13,6 +13,12 @@ import java.util.List;
 @Service
 public class MainMenuService {
 
+    LocaleMessageService localeMessageService;
+
+    public MainMenuService(LocaleMessageService localeMessageService) {
+        this.localeMessageService = localeMessageService;
+    }
+
     public SendMessage getMainMenuMessage(final String chatId, final String textMessage) {
 
         final ReplyKeyboardMarkup replyKeyboardMarkup = getMainMenuKeyboard();
@@ -32,7 +38,7 @@ public class MainMenuService {
         KeyboardRow row1 = new KeyboardRow();
         KeyboardRow row2 = new KeyboardRow();
 
-        row1.add(new KeyboardButton("Ask me a question")); // сделать кастомизированными
+        row1.add(new KeyboardButton("Ask me a question"));
         row1.add(new KeyboardButton("Button 2"));
         row2.add(new KeyboardButton("Wide Button 3"));
 
@@ -49,7 +55,7 @@ public class MainMenuService {
         final SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(chatId);
-        sendMessage.setText(textMessage);
+        sendMessage.setText(localeMessageService.getMessage(textMessage));
         if(replyKeyboardMarkup != null) {
             sendMessage.setReplyMarkup(replyKeyboardMarkup);
         }

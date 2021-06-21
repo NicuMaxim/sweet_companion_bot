@@ -1,5 +1,6 @@
 package com.sweet_companion_bot.botapi.handlers;
 
+import com.sweet_companion_bot.service.InlineButtonsService;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -8,10 +9,10 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Component
 public class MenuHandler {
 
-    InlineButtonsHandler inlineButtonsHandler;
+    InlineButtonsService inlineButtonsService;
 
-    public MenuHandler(InlineButtonsHandler inlineButtonsHandler) {
-        this.inlineButtonsHandler = inlineButtonsHandler;
+    public MenuHandler(InlineButtonsService inlineButtonsService) {
+        this.inlineButtonsService = inlineButtonsService;
     }
 
     public BotApiMethod<?> getMenuReply(String chatId, Message message) {
@@ -35,7 +36,7 @@ public class MenuHandler {
         SendMessage menuReply = new SendMessage(chatId, reply);
 
         if (inlineButton) {
-            menuReply.setReplyMarkup(inlineButtonsHandler.getInlineMessageButtons());
+            menuReply.setReplyMarkup(inlineButtonsService.getInlineMessageButtons());
         }
 
         return menuReply;

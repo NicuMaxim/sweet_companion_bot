@@ -1,4 +1,4 @@
-package com.sweet_companion_bot.botapi.handlers;
+package com.sweet_companion_bot.service;
 
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -8,15 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class InlineButtonsHandler {
+public class InlineButtonsService {
 
     public InlineKeyboardMarkup getInlineMessageButtons() {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
 
-        InlineKeyboardButton button1 = new InlineKeyboardButton("inlineButtonName.1");
-        InlineKeyboardButton button2 = new InlineKeyboardButton("inlineButtonName.2");
-        InlineKeyboardButton button3 = new InlineKeyboardButton("inlineButtonName.3");
-        InlineKeyboardButton button4 = new InlineKeyboardButton("inlineButtonName.4");
+        InlineKeyboardButton button1 = new InlineKeyboardButton("button_1");
+        InlineKeyboardButton button2 = new InlineKeyboardButton("button_2");
+        InlineKeyboardButton button3 = new InlineKeyboardButton("button_3");
+        InlineKeyboardButton button4 = new InlineKeyboardButton("button_4");
 
         button1.setCallbackData("inlineButton1");
         button2.setCallbackData("inlineButton2");

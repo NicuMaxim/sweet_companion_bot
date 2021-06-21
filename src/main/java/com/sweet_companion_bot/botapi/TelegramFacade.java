@@ -1,46 +1,58 @@
 package com.sweet_companion_bot.botapi;
 
-import com.sweet_companion_bot.botapi.handlers.InlineButtonsHandler;
+import com.sweet_companion_bot.TelegramBot;
+import com.sweet_companion_bot.botapi.handlers.CallbackQueryHandler;
+import com.sweet_companion_bot.service.InlineButtonsService;
 import com.sweet_companion_bot.botapi.handlers.StartHandler;
 import com.sweet_companion_bot.botapi.handlers.MenuHandler;
-import com.sweet_companion_bot.service.MainMenuService;
 import com.sweet_companion_bot.service.ReplyMessageService;
+import com.sweet_companion_bot.service.UploadFileService;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Document;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+
 @Component
 public class TelegramFacade {
-    private ReplyMessageService replyMessageService;
+    private ReplyMessageService replyMessageService; // было бы хорошо убрать и сделать handler
     private StartHandler startHandler;
     private MenuHandler menuHandler;
-    private InlineButtonsHandler inlineButtonsHandler;
+    private CallbackQueryHandler callbackQueryHandler;
+    private UploadFileService uploadFileService; // было бы хорошо убрать и сделать handler
 
-    public TelegramFacade(ReplyMessageService replyMessageService, StartHandler startHandler, MenuHandler menuHandler, InlineButtonsHandler inlineButtonsHandler) {
+    public TelegramFacade(ReplyMessageService replyMessageService, StartHandler startHandler, MenuHandler menuHandler, CallbackQueryHandler callbackQueryHandler, UploadFileService uploadFileService) {
         this.replyMessageService = replyMessageService;
         this.startHandler = startHandler;
         this.menuHandler = menuHandler;
-        this.inlineButtonsHandler = inlineButtonsHandler;
+        this.callbackQueryHandler = callbackQueryHandler;
+        this.uploadFileService = uploadFileService;
     }
 
+    @SneakyThrows
     public BotApiMethod<?> handleUpdate(Update update) {
         BotApiMethod<?> replyMessage = null;
 
-        if (update.hasMessage())
-        System.out.println(update.getMessage().getFrom().getLanguageCode());
+        Message message = update.getMessage();
 
+        if (message != null) {
+            Document document = update.getMessage().getDocument();
+            if (document != null) {
+                SendMessage replyAfterUploadFile = uploadFileService.uploadFileAndReply(update);
+                return replyAfterUploadFile;
+            }
+        }
 
-        if(update.hasCallbackQuery()) {
+        if (update.hasCallbackQuery()) {
             CallbackQuery callbackQuery = update.getCallbackQuery();
             System.out.println("New callbackQuery from User: " + update.getCallbackQuery().getFrom().getUserName() + ", userId: " + callbackQuery.getFrom().getId() + ", with data: " +  update.getCallbackQuery().getData());
             return processCallbackQuery(callbackQuery);
         }
 
-        Message message = update.getMessage();
         if (message != null && message.hasText()) {
             System.out.println("New message from User: " + message.getFrom().getUserName() + ", userId: " + message.getFrom().getId() + ", chatId: " + message.getChatId() + " with text: " + message.getText());
             replyMessage = handleInputMessage(message);
@@ -79,34 +91,9 @@ public class TelegramFacade {
 
     private BotApiMethod<?> processCallbackQuery(CallbackQuery buttonQuery) {
         final String chatId = buttonQuery.getMessage().getChatId().toString();
-
-        System.out.println(buttonQuery);
-
-        BotApiMethod<?> callBackAnswer = null;
-
-        if (buttonQuery.getData().equals("inlineButton1")) {
-            callBackAnswer = new SendMessage(chatId, "You pressed button_1. This is a simple answer.");
-        } else if (buttonQuery.getData().equals("inlineButton2")) {
-            callBackAnswer = sendAnswerCallbackQuery("You pressed button_2! No alert. Now you can press any button again.", false, buttonQuery);
-        } else if (buttonQuery.getData().equals("inlineButton3")) {
-            callBackAnswer = sendAnswerCallbackQuery("You pressed button_3! Alert! Now you can press any button again.", true, buttonQuery);
-        } else if (buttonQuery.getData().equals("inlineButton4")) {
-            SendMessage callBackAnswer1 = new SendMessage(chatId, "Answer again, please.");
-            callBackAnswer1.setReplyMarkup(inlineButtonsHandler.getInlineMessageButtons());
-            callBackAnswer =  callBackAnswer1;
-        }
+        BotApiMethod<?> callBackAnswer = callbackQueryHandler.handleCallbackQuery(buttonQuery, chatId);
 
         return callBackAnswer;
     }
 
-
-    private AnswerCallbackQuery sendAnswerCallbackQuery(String text, boolean alert, CallbackQuery callbackQuery) {
-
-        AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery();
-        answerCallbackQuery.setCallbackQueryId(callbackQuery.getId());
-        answerCallbackQuery.setShowAlert(alert);
-        answerCallbackQuery.setText(text);
-
-        return answerCallbackQuery;
-    }
 }
