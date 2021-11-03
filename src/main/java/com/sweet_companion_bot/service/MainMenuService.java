@@ -36,14 +36,14 @@ public class MainMenuService {
 
         List<KeyboardRow> keyboard = new ArrayList<>();
         KeyboardRow row1 = new KeyboardRow();
-        KeyboardRow row2 = new KeyboardRow();
+//        KeyboardRow row2 = new KeyboardRow();
 
-        row1.add(new KeyboardButton("Ask me a question"));
-        row1.add(new KeyboardButton("Button 2"));
-        row2.add(new KeyboardButton("Wide Button 3"));
+        row1.add(new KeyboardButton(localeMessageService.getMessage("menu.button.1")));
+        row1.add(new KeyboardButton(localeMessageService.getMessage("menu.button.2")));
+   //     row2.add(new KeyboardButton("Wide Button 3"));
 
         keyboard.add(row1);
-        keyboard.add(row2);
+//        keyboard.add(row2);
 
         replyKeyboardMarkup.setKeyboard(keyboard);
 
@@ -55,6 +55,7 @@ public class MainMenuService {
         final SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(chatId);
+        sendMessage.setText(textMessage);
         sendMessage.setText(localeMessageService.getMessage(textMessage));
         if(replyKeyboardMarkup != null) {
             sendMessage.setReplyMarkup(replyKeyboardMarkup);

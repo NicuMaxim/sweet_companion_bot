@@ -17,14 +17,11 @@ public class ReplyMessageService {
 
     public SendMessage getReplyMessage(String chatId, Message message) {
 
-        // тут вместо старого функционала я игрался с message.properties - потом подумать, как это обыграть
-
         setLocaleLanguageIfAvailable(message);
+//        String username = message.getFrom().getUserName();
+//        String text = message.getText();
 
-        String username = message.getFrom().getUserName();
-        String text = message.getText();
-
-        SendMessage replyMessage = new SendMessage(chatId, localeMessageService.getMessage("reply.1")); //"Hi, " + username + "! Stop saying '" + text + "'! This is annoying!"
+        SendMessage replyMessage = new SendMessage(chatId, localeMessageService.getMessage("reply.menu"));
         return replyMessage;
     }
 
@@ -32,7 +29,7 @@ public class ReplyMessageService {
         return new SendMessage(chatId, localeMessageService.getMessage(replyMessage, args));
     }
 
-    private void setLocaleLanguageIfAvailable(Message message) {
+    public void setLocaleLanguageIfAvailable(Message message) {
 
         String localeTag = message.getFrom().getLanguageCode();
 
@@ -40,10 +37,4 @@ public class ReplyMessageService {
             localeMessageService.setLocale(Locale.forLanguageTag(localeTag));
         }
     }
-
-
-        // тут можно добавить более сложную логику
-
-
-
 }
