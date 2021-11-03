@@ -1,97 +1,64 @@
 package com.sweet_companion_bot.botapi;
 
-//import com.sweet_companion_bot.botapi.handlers.CallbackQueryHandler;
-import com.sweet_companion_bot.botapi.handlers.StartHandler;
+import com.sweet_companion_bot.botapi.handlers.MessageHandler;
 import com.sweet_companion_bot.botapi.handlers.MenuHandler;
 import com.sweet_companion_bot.service.LocaleMessageService;
+import com.sweet_companion_bot.service.MainMenuService;
 import com.sweet_companion_bot.service.ReplyMessageService;
-//import com.sweet_companion_bot.service.UploadFileService;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Document;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 
 @Component
 public class TelegramFacade {
-    private ReplyMessageService replyMessageService; // было бы хорошо убрать и сделать handler
-    private StartHandler startHandler;
+    private MainMenuService mainMenuService;
+    private MessageHandler messageHandler;
     private MenuHandler menuHandler;
     private LocaleMessageService localeMessageService;
-//    private CallbackQueryHandler callbackQueryHandler;
-//    private UploadFileService uploadFileService; // было бы хорошо убрать и сделать handler
+    private ReplyMessageService replyMessageService;
 
-    public TelegramFacade(ReplyMessageService replyMessageService, StartHandler startHandler, MenuHandler menuHandler, LocaleMessageService localeMessageService) {
-        this.replyMessageService = replyMessageService;
-        this.startHandler = startHandler;
+
+    public TelegramFacade(MainMenuService mainMenuService, MessageHandler messageHandler, MenuHandler menuHandler, LocaleMessageService localeMessageService, ReplyMessageService replyMessageService) {
+        this.mainMenuService = mainMenuService;
+        this.messageHandler = messageHandler;
         this.menuHandler = menuHandler;
         this.localeMessageService = localeMessageService;
-//        this.callbackQueryHandler = callbackQueryHandler;
-//        this.uploadFileService = uploadFileService;
+        this.replyMessageService = replyMessageService;
     }
 
     @SneakyThrows
     public BotApiMethod<?> handleUpdate(Update update) {
         BotApiMethod<?> replyMessage = null;
-
         Message message = update.getMessage();
-
-//        if (message != null) {
-//            Document document = update.getMessage().getDocument();
-//            if (document != null) {
-//                SendMessage replyAfterUploadFile = uploadFileService.uploadFileAndReply(update);
-//                return replyAfterUploadFile;
-//            }
-//        }
-
-//        if (update.hasCallbackQuery()) {
-//            CallbackQuery callbackQuery = update.getCallbackQuery();
-//            System.out.println("New callbackQuery from User: " + update.getCallbackQuery().getFrom().getUserName() + ", userId: " + callbackQuery.getFrom().getId() + ", with data: " +  update.getCallbackQuery().getData());
-//            return processCallbackQuery(callbackQuery);
-//        }
 
         if (message != null && message.hasText()) {
             System.out.println("New message from User: " + message.getFrom().getUserName() + ", userId: " + message.getFrom().getId() + ", chatId: " + message.getChatId() + " with text: " + message.getText());
+
+            replyMessageService.setLocaleLanguageIfAvailable(message);
             replyMessage = handleInputMessage(message);
         }
-
         return replyMessage;
     }
-
 
     private BotApiMethod<?> handleInputMessage(Message message) {
 
         final String chatId = message.getFrom().getId().toString();
-        String inputMsg = message.getText();
-        BotApiMethod<?> replyMessage;
+        String inputText = message.getText();
+        String replyMessage;
 
-        switch (inputMsg) {
-            case "/start":
-                replyMessage = startHandler.getStartReply(chatId, message);
-                break;
-//            case "Комплимент дня":
-//            case "Отличный день, чтобы ...":
-//            case "Wide Button 3":
- //               replyMessage = menuHandler.getMenuReply(chatId, inputMsg);
- //               break;
-            default:
- //               replyMessage = replyMessageService.getReplyMessage(chatId, message);
-                replyMessage = menuHandler.getMenuReply(chatId, inputMsg);
-                break;
+        if (inputText.equals(localeMessageService.getMessage("menu.button.1"))
+                || inputText.equals(localeMessageService.getMessage("menu.button.2"))) {
+            replyMessage = menuHandler.getMenuReply(inputText);
+
+        } else {
+            replyMessage = messageHandler.getReplyMessage(message);
         }
-        return replyMessage;
+
+        BotApiMethod<?> replyWithMenu = mainMenuService.getMainMenuMessage(chatId, replyMessage);
+
+        return replyWithMenu;
     }
-
-
-//    private BotApiMethod<?> processCallbackQuery(CallbackQuery buttonQuery) {
-//        final String chatId = buttonQuery.getMessage().getChatId().toString();
-//        BotApiMethod<?> callBackAnswer = callbackQueryHandler.handleCallbackQuery(buttonQuery, chatId);
-//
-//        return callBackAnswer;
-//    }
-
 }
