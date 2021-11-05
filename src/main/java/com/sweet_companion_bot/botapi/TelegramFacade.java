@@ -4,14 +4,16 @@ import com.sweet_companion_bot.botapi.handlers.MessageHandler;
 import com.sweet_companion_bot.botapi.handlers.MenuHandler;
 import com.sweet_companion_bot.service.LocaleMessageService;
 import com.sweet_companion_bot.service.MainMenuService;
+import com.sweet_companion_bot.service.PhotoMessageService;
 import com.sweet_companion_bot.service.ReplyMessageService;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-
+@Slf4j
 @Component
 public class TelegramFacade {
     private MainMenuService mainMenuService;
@@ -19,14 +21,16 @@ public class TelegramFacade {
     private MenuHandler menuHandler;
     private LocaleMessageService localeMessageService;
     private ReplyMessageService replyMessageService;
+    private PhotoMessageService photoMessageService;
 
 
-    public TelegramFacade(MainMenuService mainMenuService, MessageHandler messageHandler, MenuHandler menuHandler, LocaleMessageService localeMessageService, ReplyMessageService replyMessageService) {
+    public TelegramFacade(MainMenuService mainMenuService, MessageHandler messageHandler, MenuHandler menuHandler, LocaleMessageService localeMessageService, ReplyMessageService replyMessageService, PhotoMessageService photoMessageService) {
         this.mainMenuService = mainMenuService;
         this.messageHandler = messageHandler;
         this.menuHandler = menuHandler;
         this.localeMessageService = localeMessageService;
         this.replyMessageService = replyMessageService;
+        this.photoMessageService = photoMessageService;
     }
 
     @SneakyThrows
@@ -35,7 +39,7 @@ public class TelegramFacade {
         Message message = update.getMessage();
 
         if (message != null && message.hasText()) {
-            System.out.println("New message from User: " + message.getFrom().getUserName() + ", userId: " + message.getFrom().getId() + ", chatId: " + message.getChatId() + " with text: " + message.getText());
+            log.info("New message from User: {}, userId: {}, chatId: {} with text: {}", message.getFrom().getUserName(), message.getFrom().getId(), message.getChatId(), message.getText());
 
             replyMessageService.setLocaleLanguageIfAvailable(message);
             replyMessage = handleInputMessage(message);
@@ -50,11 +54,16 @@ public class TelegramFacade {
         String replyMessage;
 
         if (inputText.equals(localeMessageService.getMessage("menu.button.1"))
-                || inputText.equals(localeMessageService.getMessage("menu.button.2"))) {
+                || inputText.equals(localeMessageService.getMessage("menu.button.2"))
+                || inputText.equals(localeMessageService.getMessage("menu.button.3"))) {
             replyMessage = menuHandler.getMenuReply(inputText);
 
         } else {
             replyMessage = messageHandler.getReplyMessage(message);
+        }
+
+        if (replyMessage.equals("button.3.reply.1") || replyMessage.equals("button.3.reply.2") || replyMessage.equals("button.3.reply.3")) {
+            photoMessageService.sendImage();
         }
 
         BotApiMethod<?> replyWithMenu = mainMenuService.getMainMenuMessage(chatId, replyMessage);

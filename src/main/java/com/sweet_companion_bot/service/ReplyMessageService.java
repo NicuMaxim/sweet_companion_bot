@@ -17,7 +17,6 @@ public class ReplyMessageService {
     public void setLocaleLanguageIfAvailable(Message message) {
 
         String localeTag = message.getFrom().getLanguageCode();
-
         if (localeTag.equals("ru") || localeTag.equals("en")) {
             localeMessageService.setLocale(Locale.forLanguageTag(localeTag));
         }

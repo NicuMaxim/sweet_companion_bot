@@ -2,10 +2,13 @@ package com.sweet_companion_bot.botapi.handlers;
 
 import com.sweet_companion_bot.service.LocaleMessageService;
 import com.sweet_companion_bot.service.MainMenuService;
+import com.sweet_companion_bot.service.Util;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
+import static java.lang.Integer.parseInt;
+
+@Slf4j
 @Component
 public class MenuHandler {
 
@@ -20,11 +23,20 @@ public class MenuHandler {
     public String getMenuReply(String inputText) {
 
         String reply;
+        int randomReplyNumberForButton1 = Util.getRandomInt(1, parseInt(localeMessageService.getMessage("button.1.reply.total")));
+        int randomReplyNumberForButton2 = Util.getRandomInt(1, parseInt(localeMessageService.getMessage("button.2.reply.total")));
+        int randomReplyNumberForButton3 = Util.getRandomInt(1, parseInt(localeMessageService.getMessage("button.3.reply.total")));
+
+        log.info("MenuHandler --- getMenuReply(): Random reply number for button1 = " + randomReplyNumberForButton1);
+        log.info("MenuHandler --- getMenuReply(): Random reply number for button2 = " + randomReplyNumberForButton2);
+        log.info("MenuHandler --- getMenuReply(): Random reply number for button3 = " + randomReplyNumberForButton3);
 
         if (inputText.equals(localeMessageService.getMessage("menu.button.1"))) {
-            reply = "reply.1";
+            reply = "button.1.reply." + randomReplyNumberForButton1;
         } else if (inputText.equals(localeMessageService.getMessage("menu.button.2"))) {
-            reply = "reply.4";
+            reply = "button.2.reply." + randomReplyNumberForButton2;
+        } else if (inputText.equals(localeMessageService.getMessage("menu.button.3"))) {
+            reply = "button.3.reply." + randomReplyNumberForButton3;
         } else reply = "reply.error";
 
         return reply;

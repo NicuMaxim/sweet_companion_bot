@@ -35,12 +35,12 @@
 <!--            <version>5.2.0</version>-->
 <!--        </dependency>-->
 
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/io.sgr.telegram/telegram-bot.api &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>io.sgr.telegram</groupId>-->
-<!--            <artifactId>telegram-bot.api</artifactId>-->
-<!--            <version>1.1.1</version>-->
-<!--        </dependency>-->
+        <!-- https://mvnrepository.com/artifact/io.sgr.telegram/telegram-bot.api -->
+        <dependency>
+            <groupId>io.sgr.telegram</groupId>
+            <artifactId>telegram-bot.api</artifactId>
+            <version>1.1.1</version>
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.telegram/telegrambots-spring-boot-starter -->
         <dependency>
