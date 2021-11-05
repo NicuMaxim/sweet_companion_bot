@@ -27,9 +27,7 @@ public class MenuHandler {
         int randomReplyNumberForButton2 = Util.getRandomInt(1, parseInt(localeMessageService.getMessage("button.2.reply.total")));
         int randomReplyNumberForButton3 = Util.getRandomInt(1, parseInt(localeMessageService.getMessage("button.3.reply.total")));
 
-        log.info("MenuHandler --- getMenuReply(): Random reply number for button1 = " + randomReplyNumberForButton1);
-        log.info("MenuHandler --- getMenuReply(): Random reply number for button2 = " + randomReplyNumberForButton2);
-        log.info("MenuHandler --- getMenuReply(): Random reply number for button3 = " + randomReplyNumberForButton3);
+        log.info("MenuHandler --- getMenuReply(): Random reply numbers for button1: {}, button2: {}, button3: {}", randomReplyNumberForButton1, randomReplyNumberForButton2, randomReplyNumberForButton3);
 
         if (inputText.equals(localeMessageService.getMessage("menu.button.1"))) {
             reply = "button.1.reply." + randomReplyNumberForButton1;

@@ -13,7 +13,7 @@ public class MessageHandler {
         this.mainMenuService = mainMenuService;
     }
 
-    public String getReplyMessage(Message message) {
+    public String getMessageReply(Message message) {
 
         String textMessage = message.getText();
         String replyMessage;
@@ -23,7 +23,6 @@ public class MessageHandler {
         } else {
             replyMessage = "reply.error";
         }
-
 
         return replyMessage;
     }

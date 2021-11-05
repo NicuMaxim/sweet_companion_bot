@@ -39,7 +39,7 @@ public class TelegramFacade {
         Message message = update.getMessage();
 
         if (message != null && message.hasText()) {
-            log.info("New message from User: {}, userId: {}, chatId: {} with text: {}", message.getFrom().getUserName(), message.getFrom().getId(), message.getChatId(), message.getText());
+            log.info("TelegramFacade --- handleUpdate(): New message from User: {}, userId: {}, chatId: {} with text: {}", message.getFrom().getUserName(), message.getFrom().getId(), message.getChatId(), message.getText());
 
             replyMessageService.setLocaleLanguageIfAvailable(message);
             replyMessage = handleInputMessage(message);
@@ -59,15 +59,16 @@ public class TelegramFacade {
             replyMessage = menuHandler.getMenuReply(inputText);
 
         } else {
-            replyMessage = messageHandler.getReplyMessage(message);
+            replyMessage = messageHandler.getMessageReply(message);
         }
 
-        if (replyMessage.equals("button.3.reply.1") || replyMessage.equals("button.3.reply.2") || replyMessage.equals("button.3.reply.3")) {
+        if (replyMessage.contains("button.3.reply.")) {
             photoMessageService.sendImage();
         }
 
         BotApiMethod<?> replyWithMenu = mainMenuService.getMainMenuMessage(chatId, replyMessage);
 
+        log.info("TelegramFacade --- handleInputMessage(): Reply will be send to User: {}", replyWithMenu);
         return replyWithMenu;
     }
 }

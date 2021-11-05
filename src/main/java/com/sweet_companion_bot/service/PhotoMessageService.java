@@ -19,7 +19,6 @@ import java.io.FileInputStream;
 
 @Slf4j
 @PropertySource("classpath:messages_en.properties")
-@PropertySource("application.properties")
 @Service
 public class PhotoMessageService  {
 
@@ -28,8 +27,10 @@ public class PhotoMessageService  {
     private String imagesStorage;
     private int numberOfStoredImages;
 
-    public PhotoMessageService(@Value("${telegrambot.botToken}") String token, @Value("${telegrambot.chat_id}") String chat_it,
-                               @Value("${telegrambot.imagesStorage}") String imagesStorage, @Value("${numberOfStoredImages}") int numberOfStoredImages) {
+    public PhotoMessageService(@Value("${telegrambot.botToken}") String token,
+                               @Value("${telegrambot.chat_id}") String chat_it,
+                               @Value("${telegrambot.imagesStorage}") String imagesStorage,
+                               @Value("${numberOfStoredImages}") int numberOfStoredImages) {
         this.token = token;
         this.chat_it = chat_it;
         this.imagesStorage = imagesStorage;
