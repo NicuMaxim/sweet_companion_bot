@@ -4,7 +4,6 @@ import com.sweet_companion_bot.unsplash.UnsplashClient;
 import com.sweet_companion_bot.unsplash.model.UnsplashImage;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -17,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.BadRequestException;
 import java.io.*;
 import java.net.URL;
 
@@ -42,25 +40,23 @@ public class PhotoMessageService  {
     }
 
     @SneakyThrows
-    private File getImageFromUnsplash() {
-
+    private String getImageDownloadLinkFromUnsplash() {
         UnsplashImage unsplashImage = unsplashClient.getRandomPhoto();
-        //String downloadLink = unsplashImage.links.download;
-        String downloadLink = unsplashImage.urls.regular;
 
-        File localFile = new File("src/main/resources/temp_files/temp1");
-        InputStream inputStream = new URL(downloadLink).openStream();
-        FileUtils.copyInputStreamToFile(inputStream, localFile);
-        inputStream.close();
-
-        return localFile;
+        if (unsplashImage.urls != null) {
+            String downloadLink = unsplashImage.urls.regular;
+            log.info("PhotoMessageService --- getImageFromUnsplash() : Return image download link from Unsplash");
+            return downloadLink;
+        }
+        log.info("PhotoMessageService --- getImageFromUnsplash() : Error. Didn't get a download link from Unsplash");
+        return "";
     }
 
     @SneakyThrows
     public String sendImage(String chatId) {
 
         String imageName = String.join("", "image", String.valueOf(Util.getRandomInt(1, numberOfStoredImages)), ".png");
-        String pathToFile = String.join("", imagesStorage, imageName);
+        String pathToLocalFile = String.join("", imagesStorage, imageName);
         String url = String.join("", "https://api.telegram.org/bot", token, "/sendPhoto?chat_id=", chatId);
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -68,40 +64,41 @@ public class PhotoMessageService  {
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         String errorMessage = "";
 
-        // File f = new File();
-        File f = getImageFromUnsplash();
+        String downloadLink = getImageDownloadLinkFromUnsplash();
+        InputStream inputStream = null;
 
-        if (f == null) {
-            f = new File(pathToFile);
+        if (!downloadLink.equals("")) {
+            inputStream = new URL(downloadLink).openStream();
+        } else {
+            try {
+                inputStream = new FileInputStream(pathToLocalFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return errorMessage = "reply.exception.1";
+                 }
+            log.info("PhotoMessageService --- sendImage(): Didn't get an image from Unsplash. One of the locally stored photos will be sent.");
         }
 
-        try {
-            builder.addBinaryBody(
+        builder.addBinaryBody(
                     "photo", // this is the key for param
-                    new FileInputStream(f),
+                    inputStream,
                     ContentType.APPLICATION_OCTET_STREAM,
-                    f.getName()
-            );
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return errorMessage = "reply.exception.1";
-        }
+                    "photoToSend"
+        );
 
         HttpEntity multipart = builder.build();
-            uploadFilePostRequest.setEntity(multipart);
+        uploadFilePostRequest.setEntity(multipart);
 
-        CloseableHttpResponse response = null;
-            response = httpClient.execute(uploadFilePostRequest);
+        CloseableHttpResponse response;
+        response = httpClient.execute(uploadFilePostRequest);
 
         if (response.getStatusLine().getStatusCode() != 200) {
             log.error("PhotoMessageService --- sendImage(): An error occurred while sending the HTTP request. Status code: {}", response.getStatusLine().getStatusCode());
             return errorMessage = "reply.exception.2";
         }
 
-        f.delete();
-
         HttpEntity responseEntity = response.getEntity();
-        String responseString = null;
+        String responseString;
         responseString = EntityUtils.toString(responseEntity, "UTF-8");
 
         log.info("PhotoMessageService --- sendImage(): Response status line: {}", response.getStatusLine());
