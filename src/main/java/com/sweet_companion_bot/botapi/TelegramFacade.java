@@ -38,11 +38,16 @@ public class TelegramFacade {
         BotApiMethod<?> replyMessage = null;
         Message message = update.getMessage();
 
-        if (message != null && message.hasText()) {
-            log.info("TelegramFacade --- handleUpdate(): New message from User: {}, userId: {}, chatId: {} with text: {}", message.getFrom().getUserName(), message.getFrom().getId(), message.getChatId(), message.getText());
-
+        if (message != null) {
             replyMessageService.setLocaleLanguageIfAvailable(message);
-            replyMessage = handleInputMessage(message);
+
+            if (message.hasText()) {
+                log.info("TelegramFacade --- handleUpdate(): New message from User: {}, userId: {}, chatId: {} with text: {}", message.getFrom().getUserName(), message.getFrom().getId(), message.getChatId(), message.getText());
+                replyMessage = handleInputMessage(message);
+            } else {
+                log.info("TelegramFacade --- handleUpdate(): No Text Error. New message from User: {}, userId: {}, chatId: {} without text.", message.getFrom().getUserName(), message.getFrom().getId(), message.getChatId());
+                replyMessage = mainMenuService.getMainMenuMessage(message.getFrom().getId().toString(), "reply.error");
+            }
         }
         return replyMessage;
     }
@@ -63,7 +68,10 @@ public class TelegramFacade {
         }
 
         if (replyMessage.contains("button.3.reply.")) {
-            photoMessageService.sendImage();
+            String errorMessage = photoMessageService.sendImage(chatId);
+            if (!errorMessage.equals("")) {
+                replyMessage = errorMessage;
+            }
         }
 
         BotApiMethod<?> replyWithMenu = mainMenuService.getMainMenuMessage(chatId, replyMessage);

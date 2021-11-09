@@ -22,7 +22,7 @@ public class MenuHandler {
 
     public String getMenuReply(String inputText) {
 
-        String reply;
+        String reply = "";
         int randomReplyNumberForButton1 = Util.getRandomInt(1, parseInt(localeMessageService.getMessage("button.1.reply.total")));
         int randomReplyNumberForButton2 = Util.getRandomInt(1, parseInt(localeMessageService.getMessage("button.2.reply.total")));
         int randomReplyNumberForButton3 = Util.getRandomInt(1, parseInt(localeMessageService.getMessage("button.3.reply.total")));
@@ -35,7 +35,7 @@ public class MenuHandler {
             reply = "button.2.reply." + randomReplyNumberForButton2;
         } else if (inputText.equals(localeMessageService.getMessage("menu.button.3"))) {
             reply = "button.3.reply." + randomReplyNumberForButton3;
-        } else reply = "reply.error";
+        }
 
         return reply;
     }

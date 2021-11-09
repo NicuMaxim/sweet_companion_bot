@@ -1,12 +1,13 @@
 package com.sweet_companion_bot.service;
 
-import com.vdurmont.emoji.EmojiParser;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +56,12 @@ public class MainMenuService {
         final SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(chatId);
-        sendMessage.setText(localeMessageService.getMessage(textMessage));
+        try {
+            sendMessage.setText(localeMessageService.getMessage(textMessage));
+        } catch (NoSuchMessageException e) {
+            e.printStackTrace();
+            sendMessage.setText(localeMessageService.getMessage("reply.exception.3"));
+        }
         if(replyKeyboardMarkup != null) {
             sendMessage.setReplyMarkup(replyKeyboardMarkup);
         }
