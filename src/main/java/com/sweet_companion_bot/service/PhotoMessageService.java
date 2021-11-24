@@ -40,8 +40,8 @@ public class PhotoMessageService  {
     }
 
     @SneakyThrows
-    private String getImageDownloadLinkFromUnsplash() {
-        UnsplashImage unsplashImage = unsplashClient.getRandomPhoto();
+    private String getImageDownloadLinkFromUnsplash(String category) {
+        UnsplashImage unsplashImage = unsplashClient.getRandomPhoto(category);
 
         if (unsplashImage.urls != null) {
             String downloadLink = unsplashImage.urls.regular;
@@ -53,7 +53,7 @@ public class PhotoMessageService  {
     }
 
     @SneakyThrows
-    public String sendImage(String chatId) {
+    public String sendImage(String chatId, String category) {
 
         String imageName = String.join("", "image", String.valueOf(Util.getRandomInt(1, numberOfStoredImages)), ".png");
         String pathToLocalFile = String.join("", imagesStorage, imageName);
@@ -64,8 +64,8 @@ public class PhotoMessageService  {
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         String errorMessage = "";
 
-        String downloadLink = getImageDownloadLinkFromUnsplash();
-        InputStream inputStream = null;
+        String downloadLink = getImageDownloadLinkFromUnsplash(category);
+        InputStream inputStream;
 
         if (!downloadLink.equals("")) {
             inputStream = new URL(downloadLink).openStream();
@@ -74,7 +74,7 @@ public class PhotoMessageService  {
                 inputStream = new FileInputStream(pathToLocalFile);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    return errorMessage = "reply.exception.1";
+                    return "reply.exception.1";
                  }
             log.info("PhotoMessageService --- sendImage(): Didn't get an image from Unsplash. One of the locally stored photos will be sent.");
         }
@@ -94,7 +94,7 @@ public class PhotoMessageService  {
 
         if (response.getStatusLine().getStatusCode() != 200) {
             log.error("PhotoMessageService --- sendImage(): An error occurred while sending the HTTP request. Status code: {}", response.getStatusLine().getStatusCode());
-            return errorMessage = "reply.exception.2";
+            return "reply.exception.2";
         }
 
         HttpEntity responseEntity = response.getEntity();

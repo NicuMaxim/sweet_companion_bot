@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
 @Service
 public class UnsplashClient {
@@ -118,8 +119,17 @@ public class UnsplashClient {
 //     *
 //     * @return
 //     */
-    public UnsplashImage getRandomPhoto() {
-        String url = UriUtils.addWebPaths(this.baseUrl, "/photos/random?query=cute&orientation=portrait");
+    public UnsplashImage getRandomPhoto(String category) {
+        String query;
+        String parameters = "orientation=portrait";
+
+        if (!category.equals("")) {
+            query = String.join("", "cute", "+", category.toLowerCase());
+        } else {
+            query = "cute";
+        }
+
+        String url = String.join("", this.baseUrl, "/photos/random?query=", query, "&", parameters);
         return getJSON(url, UnsplashImage.class);
     }
 

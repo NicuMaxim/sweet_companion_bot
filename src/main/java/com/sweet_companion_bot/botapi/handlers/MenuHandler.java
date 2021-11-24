@@ -6,6 +6,8 @@ import com.sweet_companion_bot.service.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.Locale;
+
 import static java.lang.Integer.parseInt;
 
 @Slf4j
@@ -35,6 +37,10 @@ public class MenuHandler {
             reply = "button.2.reply." + randomReplyNumberForButton2;
         } else if (inputText.equals(localeMessageService.getMessage("menu.button.3"))) {
             reply = "button.3.reply." + randomReplyNumberForButton3;
+        } else if (inputText.equals(localeMessageService.getMessage("menu.button.4"))) {
+            reply = "button.4.reply.1";
+        } else if (inputText.equals(localeMessageService.getMessage("menu.button.5"))) {
+            reply = "button.5.reply.1";
         }
 
         return reply;

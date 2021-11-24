@@ -13,17 +13,17 @@ public class MessageHandler {
         this.mainMenuService = mainMenuService;
     }
 
-    public String getMessageReply(Message message) {
+    public String getMessageReply(String inputText) {
 
-        String textMessage = message.getText();
         String replyMessage;
 
-        if (textMessage.equals("/start")) {
+        if (inputText.equals("/start")) {
             replyMessage = "reply.start";
+        } else if (inputText.equals("question")) {
+            replyMessage = "reply.question";
         } else {
             replyMessage = "reply.error";
         }
-
         return replyMessage;
     }
 }
