@@ -9,13 +9,16 @@ import com.sangupta.jerry.util.AssertUtils;
 import com.sangupta.jerry.util.GsonUtils;
 import com.sangupta.jerry.util.UriUtils;
 import com.sangupta.jerry.util.UrlManipulator;
+import com.sweet_companion_bot.service.QueryService;
 import com.sweet_companion_bot.unsplash.model.*;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +27,12 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
+@Slf4j
 @Service
 public class UnsplashClient {
+
+    @Autowired
+    QueryService queryService;
 
 //    /**
 //     * Base URL for the API
@@ -123,13 +130,10 @@ public class UnsplashClient {
         String query;
         String parameters = "orientation=portrait";
 
-        if (!category.equals("")) {
-            query = String.join("", "cute", "+", category.toLowerCase());
-        } else {
-            query = "cute";
-        }
+        query = queryService.getQueryFromCategory(category);
 
         String url = String.join("", this.baseUrl, "/photos/random?query=", query, "&", parameters);
+        log.info("UnsplashClient --- getRandomPhoto() : generated url for picture: {}", url);
         return getJSON(url, UnsplashImage.class);
     }
 

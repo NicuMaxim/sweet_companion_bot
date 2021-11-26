@@ -2,7 +2,6 @@ package com.sweet_companion_bot.botapi.handlers;
 
 import com.sweet_companion_bot.service.MainMenuService;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 @Component
 public class MessageHandler {
@@ -19,8 +18,8 @@ public class MessageHandler {
 
         if (inputText.equals("/start")) {
             replyMessage = "reply.start";
-        } else if (inputText.equals("question")) {
-            replyMessage = "reply.question";
+        } else if (inputText.equals("/help")) {
+            replyMessage = "reply.help";
         } else {
             replyMessage = "reply.error";
         }

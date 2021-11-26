@@ -33,6 +33,7 @@ public class CallbackQueryHandler {
         } else if (buttonQuery.getData().contains("inlineButton.2.")) {
             callBackAnswer = handleSecondDialog(buttonQuery, chatId);
         }
+        callBackAnswer.setParseMode("Markdown");
         return callBackAnswer;
     }
 
@@ -70,7 +71,7 @@ public class CallbackQueryHandler {
         } else if (buttonQuery.getData().equals("inlineButton.2.2")) {
             // Another category
             callBackAnswer = new SendMessage(chatId, localeMessageService.getMessage("button.4.reply.1"));
-            callBackAnswer.setReplyMarkup(inlineButtonsService.getFirstInlineMessageButtons());
+            callBackAnswer.setReplyMarkup(inlineButtonsService.getInlineMessageButtons(true));
 
         } else if (buttonQuery.getData().equals("inlineButton.2.3")) {
             // No, thanks
@@ -90,9 +91,9 @@ public class CallbackQueryHandler {
             replyText = localeMessageService.getMessage(errorMessage);
             callBackAnswer = new SendMessage(chatId, replyText);
         } else {
-            replyText = localeMessageService.getMessage("inline_keyboard.dialog.1.part.1") + category + localeMessageService.getMessage("inline_keyboard.dialog.1.part.2");
+            replyText = localeMessageService.getMessage("inline_keyboard.dialog.1.part.1") + "*" + category + "*" + localeMessageService.getMessage("inline_keyboard.dialog.1.part.2");
             callBackAnswer = new SendMessage(chatId, replyText);
-            callBackAnswer.setReplyMarkup(inlineButtonsService.getSecondInlineMessageButtons());
+            callBackAnswer.setReplyMarkup(inlineButtonsService.getInlineMessageButtons(false));
         }
         return callBackAnswer;
     }

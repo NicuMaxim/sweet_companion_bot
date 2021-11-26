@@ -5,6 +5,7 @@ import com.sweet_companion_bot.unsplash.model.UnsplashImage;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -92,7 +93,7 @@ public class PhotoMessageService  {
         CloseableHttpResponse response;
         response = httpClient.execute(uploadFilePostRequest);
 
-        if (response.getStatusLine().getStatusCode() != 200) {
+        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
             log.error("PhotoMessageService --- sendImage(): An error occurred while sending the HTTP request. Status code: {}", response.getStatusLine().getStatusCode());
             return "reply.exception.2";
         }

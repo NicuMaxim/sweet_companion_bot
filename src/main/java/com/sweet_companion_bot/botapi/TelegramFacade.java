@@ -16,6 +16,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
 @Slf4j
 @Component
@@ -89,6 +91,7 @@ public class TelegramFacade {
             replyMessage = messageHandler.getMessageReply(inputText);
         }
 
+        // Random image
         if (replyMessage.contains("button.3.reply.")) {
             String errorMessage = photoMessageService.sendImage(chatId, "");
             if (!errorMessage.equals("")) {
@@ -97,7 +100,6 @@ public class TelegramFacade {
         }
 
         SendMessage replyWithMenu = mainMenuService.getMainMenuMessage(chatId);
-
         try {
             replyWithMenu.setText(localeMessageService.getMessage(replyMessage));
         } catch (NoSuchMessageException e) {
@@ -105,14 +107,12 @@ public class TelegramFacade {
             replyWithMenu.setText(localeMessageService.getMessage("reply.exception.3"));
         }
 
-
+        // Choose Category
         if (replyWithMenu.getText().equals(localeMessageService.getMessage("button.4.reply.1"))) {
-            replyWithMenu.setReplyMarkup(inlineButtonService.getFirstInlineMessageButtons());
-            //todo
-            log.info("");
+            replyWithMenu.setReplyMarkup(inlineButtonService.getInlineMessageButtons(true));
         }
 
-        log.info("TelegramFacade --- handleInputMessage(): Reply will be send to User: {}", replyWithMenu);
+        //log.info("TelegramFacade --- handleInputMessage(): Reply will be send to User: {}", replyWithMenu);
         return replyWithMenu;
     }
 
