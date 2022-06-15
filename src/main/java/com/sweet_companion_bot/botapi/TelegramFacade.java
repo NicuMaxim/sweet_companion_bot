@@ -65,6 +65,7 @@ public class TelegramFacade {
                 replyMessage.setText("reply.error");
             }
         }
+        replyMessage.setDisableWebPagePreview(true);
         return replyMessage;
     }
 

@@ -1,31 +1,25 @@
 package com.sweet_companion_bot.unsplash;
 
 import com.google.gson.FieldNamingPolicy;
-import com.sangupta.jerry.constants.HttpHeaderName;
-import com.sangupta.jerry.http.WebRequest;
-import com.sangupta.jerry.http.WebResponse;
 import com.sangupta.jerry.http.service.HttpService;
 import com.sangupta.jerry.util.AssertUtils;
 import com.sangupta.jerry.util.GsonUtils;
 import com.sangupta.jerry.util.UriUtils;
-import com.sangupta.jerry.util.UrlManipulator;
 import com.sweet_companion_bot.service.QueryService;
 import com.sweet_companion_bot.unsplash.model.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
 
 @Slf4j
 @Service
@@ -127,12 +121,11 @@ public class UnsplashClient {
 //     * @return
 //     */
     public UnsplashImage getRandomPhoto(String category) {
-        String query;
-        String parameters = "orientation=portrait";
+        String query = queryService.getQueryFromCategory(category);
+        String orientation = queryService.getRandomOrientation();
+        String collections = queryService.getCollectionsFromCategory(category);
 
-        query = queryService.getQueryFromCategory(category);
-
-        String url = String.join("", this.baseUrl, "/photos/random?query=", query, "&", parameters);
+        String url = String.join("", this.baseUrl, "/photos/random?query=", query, "&", orientation, "&", collections);
         log.info("UnsplashClient --- getRandomPhoto() : generated url for picture: {}", url);
         return getJSON(url, UnsplashImage.class);
     }
@@ -218,6 +211,24 @@ public class UnsplashClient {
 
         return GsonUtils.getGson(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).fromJson(json, classOfT);
     }
+
+//    @SneakyThrows
+//    public InputStream getPhotoDirectly(String url) { // almost repeats getJSON method. no need
+//
+//        CloseableHttpClient httpClient = HttpClientBuilder.create() // no need to disable cookies
+//                                                          .disableCookieManagement()
+//                                                          .build();
+//
+//        HttpGet downloadFileGetRequest = new HttpGet(url);
+//        downloadFileGetRequest.setHeader("Authorization", "Client-ID " + this.clientID);
+//
+//        CloseableHttpResponse response;
+//        response = httpClient.execute(downloadFileGetRequest);
+//
+//        InputStream inputStream = response.getEntity().getContent();
+//
+//        return inputStream;
+//    }
 
     // Usual accessors follow
 

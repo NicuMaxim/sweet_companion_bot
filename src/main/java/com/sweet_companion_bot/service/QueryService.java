@@ -24,6 +24,9 @@ public class QueryService {
     @Value("#{'${categories.list.men}'.split(', ')}")
     private List<String> menCategory;
 
+    @Value("#{'${collections.list.nature}'.split(', ')}")
+    private List<String> natureCollections;
+
     public String getQueryFromCategory(String category) {
 
         String query;
@@ -47,5 +50,53 @@ public class QueryService {
                 break;
         }
         return query;
+    }
+
+    public String getRandomOrientation() {
+
+        String parameters;
+        int n = Util.getRandomInt(0, 2);
+
+        switch (n) {
+            case 0:
+                parameters = String.join("", "orientation=", "portrait");
+                break;
+            case 1:
+                parameters = String.join("", "orientation=", "landscape");
+                break;
+            case 2:
+                parameters = String.join("", "orientation=", "squarish");
+                break;
+            default:
+                parameters = "";
+                break;
+        }
+        return parameters;
+    }
+
+    public String getCollectionsFromCategory(String category) {
+
+        String collections;
+        // int n = Util.getRandomInt(0, 4);
+        int n = 0;
+
+        switch(category) {
+            case "Animals":
+                collections = "";
+                break;
+            case "Nature":
+                collections = String.join("", "collections=", natureCollections.get(n));
+                break;
+            case "Girls":
+                collections = "";
+                break;
+            case "Men":
+                collections = "";
+                break;
+            default:
+                collections = "";
+                break;
+        }
+        return collections;
     }
 }

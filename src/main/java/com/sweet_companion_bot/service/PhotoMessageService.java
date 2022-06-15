@@ -40,6 +40,35 @@ public class PhotoMessageService  {
         this.unsplashClient = unsplashClient;
     }
 
+//    @SneakyThrows
+//    public String getPhotoDirectly(String chatId, String category) {
+//
+//        String baseUrl = "https://source.unsplash.com/collection";
+//        String collectionId = "/11649432/";
+//        String url = String.join("", "https://api.telegram.org/bot", token, "/sendPhoto?chat_id=", chatId);
+//
+//        InputStream inputStream = unsplashClient.getPhotoDirectly(baseUrl + collectionId);
+//
+//
+//        CloseableHttpClient httpClient = HttpClients.createDefault();
+//        HttpPost uploadFilePostRequest = new HttpPost(url);
+//        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+//        String errorMessage = "";
+//
+//        builder.addBinaryBody(
+//                "photo", // this is the key for param
+//                inputStream,
+//                ContentType.APPLICATION_OCTET_STREAM,
+//                "photoToSend"
+//        );
+//
+//        HttpEntity multipart = builder.build();
+//        uploadFilePostRequest.setEntity(multipart);
+//
+//        CloseableHttpResponse response = httpClient.execute(uploadFilePostRequest);
+//        return errorMessage;
+//    }
+
     @SneakyThrows
     private String getImageDownloadLinkFromUnsplash(String category) {
         UnsplashImage unsplashImage = unsplashClient.getRandomPhoto(category);
@@ -90,8 +119,7 @@ public class PhotoMessageService  {
         HttpEntity multipart = builder.build();
         uploadFilePostRequest.setEntity(multipart);
 
-        CloseableHttpResponse response;
-        response = httpClient.execute(uploadFilePostRequest);
+        CloseableHttpResponse response = httpClient.execute(uploadFilePostRequest);
 
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
             log.error("PhotoMessageService --- sendImage(): An error occurred while sending the HTTP request. Status code: {}", response.getStatusLine().getStatusCode());
@@ -99,8 +127,7 @@ public class PhotoMessageService  {
         }
 
         HttpEntity responseEntity = response.getEntity();
-        String responseString;
-        responseString = EntityUtils.toString(responseEntity, "UTF-8");
+        String responseString = EntityUtils.toString(responseEntity, "UTF-8");
 
         log.info("PhotoMessageService --- sendImage(): Response status line: {}", response.getStatusLine());
         log.info("PhotoMessageService --- sendImage(): Response body: {}", responseString);
